@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Crédito Hipotecario</title>
+    <style>
+        :root {
+            --primary: #0055a6; /* Azul BNA */
+            --primary-light: #e6f0fa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .prefix, .suffix {
+            position: absolute;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0 12px;
+            pointer-events: none;
+        }
+
+        .suffix {
+            right: 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group input.has-prefix { padding-left: 35px; }
+        .input-group input.has-suffix { padding-right: 35px; }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .results-panel {
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-banner {
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .status-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #34d399;
+        }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .help-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Simulador Hipotecario</h1>
+    </div>
+
+    <div class="content">
+        <div class="inputs-panel">
+            
+            <div class="section-title">Variables del Préstamo</div>
+            
+            <div class="input-group">
+                <label>Valor de la Propiedad</label>
+                <div class="input-wrapper">
+                    <span class="prefix">US$</span>
+                    <input type="number" id="propiedad-usd" class="has-prefix" value="180000" step="1000">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Cotización Dólar (ARS)</label>
+                <div class="input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="dolar-ars" class="has-prefix" value="1200" step="10">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="input-group">
+                    <label>Financiación</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="porcentaje-financiar" class="has-suffix" value="90" max="100" min="10">
+                        <span class="suffix">%</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Plazo</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="plazo-anos" class="has-suffix" value="30" max="30" min="5">
+                        <span class="suffix">Años</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Tasa Nominal Anual (TNA)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="tna" class="has-suffix" value="2.0" step="0.1">
+                    <span class="suffix">%</span>
+                </div>
+                <div class="help-text">2% (Armada/Fuerzas), 6% (Cuenta Sueldo), 12% (General) - Mayo 2026</div>
+            </div>
+
+            <div class="section-title" style="margin-top: 32px;">Ingresos Netos Mensuales (ARS)</div>
+
+            <div class="input-group">
+                <label>Sueldo Titular (Relación de Dependencia)</label>
+                <div class="input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="ingreso-titular" class="has-prefix" value="0" step="10000">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Ingreso Titular (Monotributo - Presunto Neto)</label>
+                <div class="input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="ingreso-monotributo" class="has-prefix" value="0" step="10000">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Sueldo Cotitular</label>
+                <div class="input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="ingreso-cotitular" class="has-prefix" value="0" step="10000">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Ingresos Codeudores (Opcional, suma total)</label>
+                <div class="input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="ingreso-codeudor" class="has-prefix" value="0" step="10000">
+                </div>
+                <div class="help-text">Familiares directos para inflar la capacidad de pago.</div>
+            </div>
+
+        </div>
+
+        <div class="results-panel">
+            <div class="section-title" style="border-bottom-color: var(--border);">Diagnóstico del Algoritmo</div>
+
+            <div class="result-item">
+                <span class="result-label">Valor Propiedad (ARS)</span>
+                <span class="result-value" id="out-propiedad-ars">$ 0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Monto a Financiar (Préstamo)</span>
+                <span class="result-value highlight" id="out-monto-prestamo">$ 0</span>
+            </div>
+
+            <div class="result-item" style="margin-top: 16px;">
+                <span class="result-label">Ingreso Total Demostrado</span>
+                <span class="result-value" id="out-ingreso-total">$ 0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Límite Afectación (25%)</span>
+                <span class="result-value" id="out-cuota-maxima" style="color: var(--primary);">$ 0</span>
+            </div>
+
+            <div class="result-item" style="margin-top: 16px; background: #eef2ff; padding: 12px; border-radius: 6px;">
+                <span class="result-label" style="color: #4f46e5; font-weight: 600;">Cuota Mensual Pura Inicial</span>
+                <span class="result-value" id="out-cuota-estimada" style="color: #4f46e5; font-size: 1.3rem;">$ 0</span>
+            </div>
+
+            <div id="status-banner" class="status-banner status-approved">
+                EVALUANDO...
+            </div>
+
+            <div class="result-item" style="margin-top: 16px; flex-direction: column; align-items: flex-start; gap: 4px;">
+                <span class="result-label">Monto Máximo de Crédito Posible (por Ingresos)</span>
+                <span class="result-value" id="out-capacidad-maxima" style="font-size: 1.2rem;">$ 0</span>
+                <span class="help-text">Este es el tope de plata que el banco te prestaría según tus ingresos actuales, sin importar el valor de la propiedad.</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Formateador de moneda argentina
+    const formatter = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        maximumFractionDigits: 0
+    });
+
+    // Inputs
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', calcularVariables);
+    });
+
+    function getNum(id) {
+        const val = parseFloat(document.getElementById(id).value);
+        return isNaN(val) ? 0 : val;
+    }
+
+    function calcularVariables() {
+        // 1. Obtener valores
+        const propiedadUSD = getNum('propiedad-usd');
+        const dolarARS = getNum('dolar-ars');
+        const porcentaje = getNum('porcentaje-financiar') / 100;
+        const plazoAnos = getNum('plazo-anos');
+        const tna = getNum('tna') / 100;
+        
+        const ingTitular = getNum('ingreso-titular');
+        const ingMono = getNum('ingreso-monotributo');
+        const ingCotitular = getNum('ingreso-cotitular');
+        const ingCodeudor = getNum('ingreso-codeudor');
+
+        // 2. Cálculos Inmueble y Préstamo
+        const propiedadARS = propiedadUSD * dolarARS;
+        const montoPrestamo = propiedadARS * porcentaje;
+
+        // 3. Cálculos de Ingreso
+        const ingresoTotal = ingTitular + ingMono + ingCotitular + ingCodeudor;
+        const cuotaMaximaPermitida = ingresoTotal * 0.25; // Regla del 25%
+
+        // 4. Cálculo de Cuota (Sistema Francés)
+        const plazoMeses = plazoAnos * 12;
+        const tasaMensual = tna / 12;
+        
+        let cuotaEstimada = 0;
+        if (tasaMensual > 0 && plazoMeses > 0) {
+            cuotaEstimada = montoPrestamo * (tasaMensual / (1 - Math.pow(1 + tasaMensual, -plazoMeses)));
+        } else if (plazoMeses > 0) {
+            cuotaEstimada = montoPrestamo / plazoMeses; // Fallback por si la TNA es 0
+        }
+
+        // 5. Cálculo de Préstamo Máximo Posible según ingresos
+        let prestamoMaximo = 0;
+        if (tasaMensual > 0 && cuotaMaximaPermitida > 0) {
+            prestamoMaximo = cuotaMaximaPermitida * ((1 - Math.pow(1 + tasaMensual, -plazoMeses)) / tasaMensual);
+        }
+
+        // 6. Actualizar UI
+        document.getElementById('out-propiedad-ars').textContent = formatter.format(propiedadARS);
+        document.getElementById('out-monto-prestamo').textContent = formatter.format(montoPrestamo);
+        document.getElementById('out-ingreso-total').textContent = formatter.format(ingresoTotal);
+        document.getElementById('out-cuota-maxima').textContent = formatter.format(cuotaMaximaPermitida);
+        document.getElementById('out-cuota-estimada').textContent = formatter.format(cuotaEstimada);
+        document.getElementById('out-capacidad-maxima').textContent = formatter.format(prestamoMaximo);
+
+        // 7. Evaluar Estado
+        const statusBanner = document.getElementById('status-banner');
+        if (ingresoTotal === 0 || montoPrestamo === 0) {
+            statusBanner.textContent = "ESPERANDO DATOS";
+            statusBanner.className = "status-banner";
+            statusBanner.style.backgroundColor = "#e5e7eb";
+            statusBanner.style.color = "#4b5563";
+            statusBanner.style.borderColor = "#d1d5db";
+        } else if (cuotaEstimada <= cuotaMaximaPermitida) {
+            statusBanner.textContent = "✓ APROBADO";
+            statusBanner.className = "status-banner status-approved";
+            statusBanner.style.backgroundColor = "";
+            statusBanner.style.color = "";
+            statusBanner.style.borderColor = "";
+        } else {
+            statusBanner.textContent = "✗ RECHAZADO (Excede 25%)";
+            statusBanner.className = "status-banner status-rejected";
+            statusBanner.style.backgroundColor = "";
+            statusBanner.style.color = "";
+            statusBanner.style.borderColor = "";
+        }
+    }
+
+    // Inicializar cálculos al cargar
+    calcularVariables();
+
+</script>
+</body>
+</html>
