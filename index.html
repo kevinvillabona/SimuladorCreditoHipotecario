@@ -3,416 +3,696 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Crédito Hipotecario</title>
+    <title>Simulador Crédito Hipotecario BNA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0055a6; /* Azul BNA */
-            --primary-light: #e6f0fa;
-            --success: #10b981;
-            --danger: #ef4444;
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
-            --bg-body: #f3f4f6;
-            --bg-card: #ffffff;
-            --border: #e5e7eb;
+            --blue: #0a3d6b;
+            --blue-mid: #1565c0;
+            --blue-light: #e8f0fe;
+            --gold: #c8972a;
+            --green: #1b7a4e;
+            --green-light: #d6f5e8;
+            --red: #b91c1c;
+            --red-light: #fee2e2;
+            --warn: #92400e;
+            --warn-light: #fef3c7;
+            --text: #1a1a2e;
+            --muted: #64748b;
+            --border: #dde3ed;
+            --bg: #f0f4f9;
+            --card: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+            color: white;
+            padding: 28px 32px 24px;
+            position: relative;
             overflow: hidden;
         }
-
-        .header {
-            background-color: var(--primary);
+        .header::after {
+            content: '';
+            position: absolute;
+            right: -40px; top: -40px;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .header-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .header-badge {
+            display: inline-block;
+            background: var(--gold);
             color: white;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
+            font-size: 0.7rem;
             font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        .header p {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            margin-top: 4px;
         }
 
-        .content {
+        /* LAYOUT */
+        .main {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 28px 16px;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 20px;
+        }
+        @media (min-width: 800px) {
+            .main { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
             padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
-
-        @media (min-width: 768px) {
-            .content {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 8px;
-            margin-bottom: 16px;
+        .card-title {
+            font-size: 0.7rem;
             font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--blue-mid);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
 
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
+        /* INPUTS */
+        .field { margin-bottom: 18px; }
+        .field label {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 500;
+            color: var(--text);
             margin-bottom: 6px;
-            color: var(--text-dark);
         }
-
-        .input-wrapper {
+        .field .hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .input-wrap {
             position: relative;
             display: flex;
             align-items: center;
         }
-
-        .prefix, .suffix {
+        .input-wrap .sym {
             position: absolute;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            padding: 0 12px;
+            left: 12px;
+            font-size: 0.85rem;
+            color: var(--muted);
             pointer-events: none;
+            font-weight: 500;
         }
-
-        .suffix {
-            right: 0;
+        .input-wrap .sym-right {
+            left: auto;
+            right: 12px;
         }
-
-        .input-group input {
+        input[type="number"], select {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        
-        .input-group input.has-prefix { padding-left: 35px; }
-        .input-group input.has-suffix { padding-right: 35px; }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .results-panel {
-            background-color: #f8fafc;
-            border: 1px solid var(--border);
+            border: 1.5px solid var(--border);
             border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            background: #fafbfd;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+        }
+        input[type="number"].pl { padding-left: 32px; }
+        input[type="number"].pr { padding-right: 38px; }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+            background: white;
+        }
+        select {
+            padding-right: 36px;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
         }
 
-        .result-item {
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* MONOTRIBUTO BOX */
+        .mono-box {
+            background: var(--blue-light);
+            border: 1.5px solid #bad0f5;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 18px;
+        }
+        .mono-box label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--blue);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .mono-preview {
+            margin-top: 10px;
+            background: white;
+            border-radius: 7px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            display: none;
+        }
+        .mono-preview.visible { display: block; }
+        .mono-preview strong { color: var(--blue); }
+
+        /* RESULTS */
+        .result-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
+            align-items: baseline;
+            padding: 11px 0;
             border-bottom: 1px dashed var(--border);
+            gap: 8px;
         }
-
-        .result-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
+        .result-row:last-of-type { border-bottom: none; }
+        .result-row .rl {
+            font-size: 0.82rem;
+            color: var(--muted);
+            flex: 1;
         }
-
-        .result-label {
+        .result-row .rv {
             font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .result-value {
             font-weight: 600;
-            font-size: 1.1rem;
+            color: var(--text);
+            text-align: right;
         }
+        .result-row .rv.accent { color: var(--blue-mid); font-size: 1.05rem; }
+        .result-row .rv.big { font-size: 1.2rem; color: var(--blue); }
 
-        .status-banner {
-            padding: 16px;
-            border-radius: 8px;
+        /* STATUS */
+        .status {
+            border-radius: 10px;
+            padding: 18px;
             text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-top: 8px;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 4px 0 16px;
+            transition: all 0.3s;
         }
+        .status.waiting { background: #f1f5f9; color: var(--muted); border: 1.5px solid var(--border); }
+        .status.approved { background: var(--green-light); color: var(--green); border: 1.5px solid #6ee7b7; }
+        .status.rejected { background: var(--red-light); color: var(--red); border: 1.5px solid #fca5a5; }
 
-        .status-approved {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #34d399;
+        /* WARNINGS */
+        .alerts { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+        .alert {
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            display: none;
         }
+        .alert.visible { display: block; }
+        .alert-warn { background: var(--warn-light); color: var(--warn); border: 1px solid #fcd34d; }
+        .alert-info { background: var(--blue-light); color: var(--blue); border: 1px solid #93c5fd; }
+        .alert-red { background: var(--red-light); color: var(--red); border: 1px solid #fca5a5; }
 
-        .status-rejected {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #f87171;
-        }
-
-        .highlight {
-            color: var(--primary);
-            font-size: 1.3rem;
-        }
-        
-        .help-text {
+        /* CAPACITY BAR */
+        .cap-section { margin-top: 16px; }
+        .cap-label {
             font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 4px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .cap-bar-track {
+            background: var(--border);
+            border-radius: 99px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .cap-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--blue-mid);
+            transition: width 0.4s ease;
+            max-width: 100%;
+        }
+        .cap-bar-fill.over { background: var(--red); }
+
+        .footer-note {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-align: center;
+            padding: 16px;
+            max-width: 1080px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Simulador Hipotecario</h1>
-    </div>
-
-    <div class="content">
-        <div class="inputs-panel">
-            
-            <div class="section-title">Variables del Préstamo</div>
-            
-            <div class="input-group">
-                <label>Valor de la Propiedad</label>
-                <div class="input-wrapper">
-                    <span class="prefix">US$</span>
-                    <input type="number" id="propiedad-usd" class="has-prefix" value="180000" step="1000">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Cotización Dólar (ARS)</label>
-                <div class="input-wrapper">
-                    <span class="prefix">$</span>
-                    <input type="number" id="dolar-ars" class="has-prefix" value="1200" step="10">
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="input-group">
-                    <label>Financiación</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="porcentaje-financiar" class="has-suffix" value="90" max="100" min="10">
-                        <span class="suffix">%</span>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Plazo</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="plazo-anos" class="has-suffix" value="30" max="30" min="5">
-                        <span class="suffix">Años</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Tasa Nominal Anual (TNA)</label>
-                <div class="input-wrapper">
-                    <input type="number" id="tna" class="has-suffix" value="2.0" step="0.1">
-                    <span class="suffix">%</span>
-                </div>
-                <div class="help-text">2% (Armada/Fuerzas), 6% (Cuenta Sueldo), 12% (General) - Mayo 2026</div>
-            </div>
-
-            <div class="section-title" style="margin-top: 32px;">Ingresos Netos Mensuales (ARS)</div>
-
-            <div class="input-group">
-                <label>Sueldo Titular (Relación de Dependencia)</label>
-                <div class="input-wrapper">
-                    <span class="prefix">$</span>
-                    <input type="number" id="ingreso-titular" class="has-prefix" value="0" step="10000">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Ingreso Titular (Monotributo - Presunto Neto)</label>
-                <div class="input-wrapper">
-                    <span class="prefix">$</span>
-                    <input type="number" id="ingreso-monotributo" class="has-prefix" value="0" step="10000">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Sueldo Cotitular</label>
-                <div class="input-wrapper">
-                    <span class="prefix">$</span>
-                    <input type="number" id="ingreso-cotitular" class="has-prefix" value="0" step="10000">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Ingresos Codeudores (Opcional, suma total)</label>
-                <div class="input-wrapper">
-                    <span class="prefix">$</span>
-                    <input type="number" id="ingreso-codeudor" class="has-prefix" value="0" step="10000">
-                </div>
-                <div class="help-text">Familiares directos para inflar la capacidad de pago.</div>
-            </div>
-
-        </div>
-
-        <div class="results-panel">
-            <div class="section-title" style="border-bottom-color: var(--border);">Diagnóstico del Algoritmo</div>
-
-            <div class="result-item">
-                <span class="result-label">Valor Propiedad (ARS)</span>
-                <span class="result-value" id="out-propiedad-ars">$ 0</span>
-            </div>
-
-            <div class="result-item">
-                <span class="result-label">Monto a Financiar (Préstamo)</span>
-                <span class="result-value highlight" id="out-monto-prestamo">$ 0</span>
-            </div>
-
-            <div class="result-item" style="margin-top: 16px;">
-                <span class="result-label">Ingreso Total Demostrado</span>
-                <span class="result-value" id="out-ingreso-total">$ 0</span>
-            </div>
-
-            <div class="result-item">
-                <span class="result-label">Límite Afectación (25%)</span>
-                <span class="result-value" id="out-cuota-maxima" style="color: var(--primary);">$ 0</span>
-            </div>
-
-            <div class="result-item" style="margin-top: 16px; background: #eef2ff; padding: 12px; border-radius: 6px;">
-                <span class="result-label" style="color: #4f46e5; font-weight: 600;">Cuota Mensual Pura Inicial</span>
-                <span class="result-value" id="out-cuota-estimada" style="color: #4f46e5; font-size: 1.3rem;">$ 0</span>
-            </div>
-
-            <div id="status-banner" class="status-banner status-approved">
-                EVALUANDO...
-            </div>
-
-            <div class="result-item" style="margin-top: 16px; flex-direction: column; align-items: flex-start; gap: 4px;">
-                <span class="result-label">Monto Máximo de Crédito Posible (por Ingresos)</span>
-                <span class="result-value" id="out-capacidad-maxima" style="font-size: 1.2rem;">$ 0</span>
-                <span class="help-text">Este es el tope de plata que el banco te prestaría según tus ingresos actuales, sin importar el valor de la propiedad.</span>
-            </div>
-
-        </div>
+<div class="header">
+    <div class="header-inner">
+        <div class="header-badge">BNA · +Hogares · Mayo 2026</div>
+        <h1>Simulador Crédito Hipotecario</h1>
+        <p>Calculadora orientativa basada en la reglamentación vigente del BNA</p>
     </div>
 </div>
 
+<div class="main">
+
+    <!-- PANEL IZQUIERDO: INPUTS -->
+    <div>
+        <div class="card">
+            <div class="card-title">Propiedad y Préstamo</div>
+
+            <div class="field">
+                <label>Valor de la Propiedad</label>
+                <div class="input-wrap">
+                    <span class="sym">US$</span>
+                    <input type="number" id="prop-usd" class="pl" value="150000" step="1000" min="0">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Cotización Dólar Oficial (ARS)</label>
+                <div class="input-wrap">
+                    <span class="sym">$</span>
+                    <input type="number" id="dolar" class="pl" value="1425" step="5">
+                </div>
+            </div>
+
+            <div class="row2">
+                <div class="field">
+                    <label>Financiación</label>
+                    <div class="input-wrap">
+                        <input type="number" id="financiacion" class="pr" value="90" min="10" max="90" step="5">
+                        <span class="sym sym-right">%</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Plazo</label>
+                    <div class="input-wrap">
+                        <input type="number" id="plazo" class="pr" value="30" min="5" max="30" step="5">
+                        <span class="sym sym-right">años</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Tipo de crédito / Tasa</label>
+                <select id="tipo">
+                    <option value="2">Fuerzas Armadas / Defensa — 2% TNA (30% afectación)</option>
+                    <option value="4.5">General cuenta sueldo BNA — 4,5% TNA (25% afectación)</option>
+                    <option value="6">Sector Público — 6% TNA (30% afectación)</option>
+                    <option value="manual">Ingresar manualmente</option>
+                </select>
+            </div>
+
+            <div class="field" id="tna-manual-field" style="display:none">
+                <label>TNA personalizada</label>
+                <div class="input-wrap">
+                    <input type="number" id="tna-manual" class="pr" value="4.5" step="0.1" min="0">
+                    <span class="sym sym-right">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+            <div class="card-title">Ingresos Mensuales Netos</div>
+
+            <div class="field">
+                <label>Sueldo Titular (Relación de dependencia)</label>
+                <div class="input-wrap">
+                    <span class="sym">$</span>
+                    <input type="number" id="ing-titular" class="pl" value="0" step="10000" min="0">
+                </div>
+            </div>
+
+            <!-- MONOTRIBUTO -->
+            <div class="mono-box">
+                <label>Ingreso Titular por Monotributo</label>
+                <select id="mono-cat">
+                    <option value="0">— No aplica —</option>
+                    <option value="A">Categoría A — hasta $10.277.988/año</option>
+                    <option value="B">Categoría B — hasta $15.058.447/año</option>
+                    <option value="C">Categoría C — hasta $21.113.696/año</option>
+                    <option value="D">Categoría D — hasta $26.212.853/año</option>
+                    <option value="E">Categoría E — hasta $30.833.964/año</option>
+                    <option value="F">Categoría F — hasta $38.642.048/año</option>
+                    <option value="G">Categoría G — hasta $46.211.109/año</option>
+                    <option value="H">Categoría H — hasta $70.113.407/año</option>
+                </select>
+                <div class="mono-preview" id="mono-preview">
+                    Ingreso computable estimado: <strong id="mono-valor">—</strong><br>
+                    <span style="font-size:0.7rem;opacity:0.8">(Tope anual ÷ 12 × 70% estimado neto, criterio conservador BNA)</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Sueldo Cotitular</label>
+                <div class="input-wrap">
+                    <span class="sym">$</span>
+                    <input type="number" id="ing-cotitular" class="pl" value="0" step="10000" min="0">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Ingresos Codeudores (suma total, opcional)</label>
+                <div class="input-wrap">
+                    <span class="sym">$</span>
+                    <input type="number" id="ing-codeudor" class="pl" value="0" step="10000" min="0">
+                </div>
+                <div class="hint">Familiares directos (padres, hijos o hermanos) constituidos como codeudores solidarios.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DERECHO: RESULTADOS -->
+    <div>
+        <div class="card">
+            <div class="card-title">Diagnóstico</div>
+
+            <div id="status" class="status waiting">Completá los datos</div>
+
+            <div class="result-row">
+                <span class="rl">Valor propiedad (ARS)</span>
+                <span class="rv" id="out-prop-ars">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">Monto del préstamo</span>
+                <span class="rv accent" id="out-prestamo">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">TNA aplicada</span>
+                <span class="rv" id="out-tna">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">Ingreso total demostrado</span>
+                <span class="rv" id="out-ing-total">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">Límite afectación (<span id="out-pct-label">25</span>%)</span>
+                <span class="rv" id="out-cuota-max">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">⚡ Cuota mensual pura inicial</span>
+                <span class="rv accent" id="out-cuota">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">Cuota estimada con seguros (+12%)</span>
+                <span class="rv" id="out-cuota-seguros">—</span>
+            </div>
+
+            <div class="cap-section">
+                <div class="cap-label">
+                    <span>Cuota vs. límite permitido</span>
+                    <span id="out-pct-uso">—</span>
+                </div>
+                <div class="cap-bar-track">
+                    <div class="cap-bar-fill" id="cap-bar" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+            <div class="card-title">Capacidad de Préstamo</div>
+
+            <div class="result-row">
+                <span class="rl">Máximo posible según ingresos</span>
+                <span class="rv big" id="out-max-prestamo">—</span>
+            </div>
+            <div class="result-row">
+                <span class="rl">Equivalente en USD</span>
+                <span class="rv" id="out-max-usd">—</span>
+            </div>
+            <div class="result-row" id="row-tope-uva" style="display:none">
+                <span class="rl">Tope máximo Fuerzas Armadas</span>
+                <span class="rv" id="out-tope-uva">—</span>
+            </div>
+
+            <div class="alerts">
+                <div class="alert alert-red" id="alert-tope">
+                    ⚠️ <strong>Supera el tope de 300.000 UVAs</strong> para la línea de Fuerzas Armadas (~$587M con UVA a $1.958). El banco no puede prestar más de ese monto bajo este convenio.
+                </div>
+                <div class="alert alert-warn" id="alert-antiguedad">
+                    ⚠️ <strong>Recordá</strong>: el BNA exige 1 año de antigüedad laboral (mín. 6 meses en el empleo actual) para relación de dependencia. Para monotributistas, 2 años en la profesión y 1 año en la categoría actual.
+                </div>
+                <div class="alert alert-warn" id="alert-smvm">
+                    ⚠️ <strong>Ingreso remanente</strong>: cada titular debe conservar un ingreso neto mayor al SMVM (~$300.000) después de descontada su parte de la cuota.
+                </div>
+                <div class="alert alert-info" id="alert-score">
+                    ℹ️ <strong>Score crediticio</strong>: se requieren mínimo <strong>909 puntos</strong> en el BCRA (situación "1 - Normal"). Sin eso, la solicitud se rechaza automáticamente independientemente de los ingresos.
+                </div>
+                <div class="alert alert-info" id="alert-mono-nota" style="display:none">
+                    ℹ️ <strong>Monotributo</strong>: el ingreso computable es una estimación conservadora. El BNA consulta ARCA directamente y usa los últimos 12 meses reales de facturación. El número exacto puede variar.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note" style="padding: 16px 0 4px;">
+            Simulación orientativa. No reemplaza el análisis crediticio oficial del BNA. Valores UVA: $1.958 (26/05/2026).
+        </div>
+    </div>
+
+</div>
+
 <script>
-    // Formateador de moneda argentina
-    const formatter = new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        maximumFractionDigits: 0
-    });
+    // ─── DATOS ───────────────────────────────────────────────
+    const VALOR_UVA = 1958;
+    const TOPE_UVA_DEFENSA = 300000;
+    const SMVM = 300000; // aprox mayo 2026
 
-    // Inputs
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => {
-        input.addEventListener('input', calcularVariables);
-    });
+    // Topes anuales de facturación por categoría (mayo 2026)
+    const MONO_TOPES = {
+        A: 10277988,
+        B: 15058447,
+        C: 21113696,
+        D: 26212853,
+        E: 30833964,
+        F: 38642048,
+        G: 46211109,
+        H: 70113407,
+    };
 
+    // Factor neto conservador: el BNA toma los ingresos brutos anuales
+    // y aplica un descuento estimado por gastos e impuesto integrado.
+    // Se usa 70% como estimación conservadora.
+    const MONO_FACTOR_NETO = 0.70;
+
+    // ─── FORMATEADORES ────────────────────────────────────────
+    const fmtARS = v => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(v);
+    const fmtUSD = v => 'US$ ' + new Intl.NumberFormat('es-AR', { maximumFractionDigits:0 }).format(v);
+    const fmtPct = v => (v * 100).toFixed(1) + '%';
+
+    // ─── HELPERS ──────
     function getNum(id) {
-        const val = parseFloat(document.getElementById(id).value);
-        return isNaN(val) ? 0 : val;
+        const v = parseFloat(document.getElementById(id).value);
+        return isNaN(v) ? 0 : v;
+    }
+    function setEl(id, val) { document.getElementById(id).textContent = val; }
+    function showAlert(id, show) {
+        document.getElementById(id).classList.toggle('visible', show);
     }
 
-    function calcularVariables() {
-        // 1. Obtener valores
-        const propiedadUSD = getNum('propiedad-usd');
-        const dolarARS = getNum('dolar-ars');
-        const porcentaje = getNum('porcentaje-financiar') / 100;
-        const plazoAnos = getNum('plazo-anos');
-        const tna = getNum('tna') / 100;
-        
-        const ingTitular = getNum('ingreso-titular');
-        const ingMono = getNum('ingreso-monotributo');
-        const ingCotitular = getNum('ingreso-cotitular');
-        const ingCodeudor = getNum('ingreso-codeudor');
+    // ─── MONOTRIBUTO ──────────────────────────────────────────
+    document.getElementById('mono-cat').addEventListener('change', function() {
+        const cat = this.value;
+        const preview = document.getElementById('mono-preview');
+        const alertMono = document.getElementById('alert-mono-nota');
 
-        // 2. Cálculos Inmueble y Préstamo
-        const propiedadARS = propiedadUSD * dolarARS;
-        const montoPrestamo = propiedadARS * porcentaje;
-
-        // 3. Cálculos de Ingreso
-        const ingresoTotal = ingTitular + ingMono + ingCotitular + ingCodeudor;
-        const cuotaMaximaPermitida = ingresoTotal * 0.25; // Regla del 25%
-
-        // 4. Cálculo de Cuota (Sistema Francés)
-        const plazoMeses = plazoAnos * 12;
-        const tasaMensual = tna / 12;
-        
-        let cuotaEstimada = 0;
-        if (tasaMensual > 0 && plazoMeses > 0) {
-            cuotaEstimada = montoPrestamo * (tasaMensual / (1 - Math.pow(1 + tasaMensual, -plazoMeses)));
-        } else if (plazoMeses > 0) {
-            cuotaEstimada = montoPrestamo / plazoMeses; // Fallback por si la TNA es 0
+        if (cat === '0') {
+            preview.classList.remove('visible');
+            alertMono.style.display = 'none';
+            calcular();
+            return;
         }
 
-        // 5. Cálculo de Préstamo Máximo Posible según ingresos
-        let prestamoMaximo = 0;
-        if (tasaMensual > 0 && cuotaMaximaPermitida > 0) {
-            prestamoMaximo = cuotaMaximaPermitida * ((1 - Math.pow(1 + tasaMensual, -plazoMeses)) / tasaMensual);
+        const topeAnual = MONO_TOPES[cat];
+        const mensualNeto = (topeAnual / 12) * MONO_FACTOR_NETO;
+        document.getElementById('mono-valor').textContent = fmtARS(mensualNeto) + '/mes';
+        preview.classList.add('visible');
+        alertMono.style.display = 'block';
+        calcular();
+    });
+
+    function getMonoIngreso() {
+        const cat = document.getElementById('mono-cat').value;
+        if (cat === '0') return 0;
+        const topeAnual = MONO_TOPES[cat];
+        return (topeAnual / 12) * MONO_FACTOR_NETO;
+    }
+
+    // ─── TIPO DE CRÉDITO ──────────────────────────────────────
+    document.getElementById('tipo').addEventListener('change', function() {
+        const manualField = document.getElementById('tna-manual-field');
+        manualField.style.display = this.value === 'manual' ? 'block' : 'none';
+        calcular();
+    });
+
+    function getTNA() {
+        const tipo = document.getElementById('tipo').value;
+        if (tipo === 'manual') return getNum('tna-manual') / 100;
+        return parseFloat(tipo) / 100;
+    }
+
+    function getAfectacion() {
+        const tipo = document.getElementById('tipo').value;
+        // 30% para Fuerzas Armadas (TNA 2%) y Sector Público (6%)
+        return (tipo === '2' || tipo === '6') ? 0.30 : 0.25;
+    }
+
+    function esDefensa() {
+        return document.getElementById('tipo').value === '2';
+    }
+
+    // ─── CÁLCULO PRINCIPAL ────────────────────────────────────
+    function calcular() {
+        const propUSD   = getNum('prop-usd');
+        const dolar     = getNum('dolar');
+        const finPct    = getNum('financiacion') / 100;
+        const plazoAnos = getNum('plazo');
+        const tna       = getTNA();
+        const afect     = getAfectacion();
+
+        const ingTitular   = getNum('ing-titular');
+        const ingMono      = getMonoIngreso();
+        const ingCotitular = getNum('ing-cotitular');
+        const ingCodeudor  = getNum('ing-codeudor');
+
+        // ── Inmueble
+        const propARS    = propUSD * dolar;
+        const prestamo   = propARS * finPct;
+
+        // ── Ingresos
+        const ingTotal   = ingTitular + ingMono + ingCotitular + ingCodeudor;
+        const cuotaMax   = ingTotal * afect;
+
+        // ── Cuota francesa
+        const n = plazoAnos * 12;
+        const im = tna / 12;
+        let cuota = 0;
+        if (im > 0 && n > 0) {
+            cuota = prestamo * (im / (1 - Math.pow(1 + im, -n)));
+        } else if (n > 0) {
+            cuota = prestamo / n;
+        }
+        const cuotaConSeguros = cuota * 1.12;
+
+        // ── Préstamo máximo por ingresos
+        let maxPrestamo = 0;
+        if (im > 0 && cuotaMax > 0) {
+            maxPrestamo = cuotaMax * ((1 - Math.pow(1 + im, -n)) / im);
         }
 
-        // 6. Actualizar UI
-        document.getElementById('out-propiedad-ars').textContent = formatter.format(propiedadARS);
-        document.getElementById('out-monto-prestamo').textContent = formatter.format(montoPrestamo);
-        document.getElementById('out-ingreso-total').textContent = formatter.format(ingresoTotal);
-        document.getElementById('out-cuota-maxima').textContent = formatter.format(cuotaMaximaPermitida);
-        document.getElementById('out-cuota-estimada').textContent = formatter.format(cuotaEstimada);
-        document.getElementById('out-capacidad-maxima').textContent = formatter.format(prestamoMaximo);
+        // ── Tope Defensa
+        const topeDefensa = TOPE_UVA_DEFENSA * VALOR_UVA;
+        const prestamoEfectivo = esDefensa() ? Math.min(maxPrestamo, topeDefensa) : maxPrestamo;
 
-        // 7. Evaluar Estado
-        const statusBanner = document.getElementById('status-banner');
-        if (ingresoTotal === 0 || montoPrestamo === 0) {
-            statusBanner.textContent = "ESPERANDO DATOS";
-            statusBanner.className = "status-banner";
-            statusBanner.style.backgroundColor = "#e5e7eb";
-            statusBanner.style.color = "#4b5563";
-            statusBanner.style.borderColor = "#d1d5db";
-        } else if (cuotaEstimada <= cuotaMaximaPermitida) {
-            statusBanner.textContent = "✓ APROBADO";
-            statusBanner.className = "status-banner status-approved";
-            statusBanner.style.backgroundColor = "";
-            statusBanner.style.color = "";
-            statusBanner.style.borderColor = "";
+        // ── UI
+        setEl('out-prop-ars', fmtARS(propARS));
+        setEl('out-prestamo', fmtARS(prestamo));
+        setEl('out-tna', (tna * 100).toFixed(2) + '% TNA');
+        setEl('out-ing-total', fmtARS(ingTotal));
+        setEl('out-pct-label', (afect * 100).toFixed(0));
+        setEl('out-cuota-max', fmtARS(cuotaMax));
+        setEl('out-cuota', fmtARS(cuota));
+        setEl('out-cuota-seguros', fmtARS(cuotaConSeguros));
+        setEl('out-max-prestamo', fmtARS(prestamoEfectivo));
+        setEl('out-max-usd', dolar > 0 ? fmtUSD(prestamoEfectivo / dolar) : '—');
+
+        // Barra
+        const ratioUso = cuotaMax > 0 ? cuota / cuotaMax : 0;
+        setEl('out-pct-uso', fmtPct(Math.min(ratioUso, 1)));
+        const bar = document.getElementById('cap-bar');
+        bar.style.width = Math.min(ratioUso * 100, 100) + '%';
+        bar.classList.toggle('over', ratioUso > 1);
+
+        // Status
+        const statusEl = document.getElementById('status');
+        if (ingTotal === 0 || prestamo === 0) {
+            statusEl.className = 'status waiting';
+            statusEl.textContent = 'Completá los datos';
+        } else if (cuota <= cuotaMax) {
+            statusEl.className = 'status approved';
+            statusEl.textContent = '✓ Calificarías para el monto solicitado';
         } else {
-            statusBanner.textContent = "✗ RECHAZADO (Excede 25%)";
-            statusBanner.className = "status-banner status-rejected";
-            statusBanner.style.backgroundColor = "";
-            statusBanner.style.color = "";
-            statusBanner.style.borderColor = "";
+            const deficit = cuota - cuotaMax;
+            statusEl.className = 'status rejected';
+            statusEl.textContent = `✗ Excede el límite de afectación — faltarían ${fmtARS(deficit)}/mes de cuota disponible`;
         }
+
+        // Tope UVA Defensa
+        const superaTope = esDefensa() && prestamo > topeDefensa;
+        showAlert('alert-tope', superaTope);
+        document.getElementById('row-tope-uva').style.display = esDefensa() ? 'flex' : 'none';
+        setEl('out-tope-uva', fmtARS(topeDefensa));
+
+        // SMVM: chequeo simplificado sobre ingreso individual más bajo
+        const ingresosMenores = [ingTitular + ingMono, ingCotitular].filter(x => x > 0);
+        const riesgoSMVM = ingresosMenores.some(ing => {
+            const cuotaProp = cuota * (ing / ingTotal);
+            return (ing - cuotaProp) < SMVM;
+        });
+        showAlert('alert-smvm', riesgoSMVM && ingTotal > 0);
+
+        // Alertas siempre visibles si hay datos
+        showAlert('alert-antiguedad', ingTotal > 0);
+        showAlert('alert-score', ingTotal > 0);
     }
 
-    // Inicializar cálculos al cargar
-    calcularVariables();
+    // ─── LISTENERS ───────────────────────────────────────────
+    document.querySelectorAll('input[type="number"]').forEach(el => {
+        el.addEventListener('input', calcular);
+    });
+    document.getElementById('tna-manual').addEventListener('input', calcular);
 
+    calcular();
 </script>
 </body>
 </html>
